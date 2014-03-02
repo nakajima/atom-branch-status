@@ -1,6 +1,7 @@
 # atom-branch-status package
 
-Show the current status of your branch using the GitHub status API.
+Show the current status of your branch using the GitHub status API. It also inserts
+a link to the branch's pull request if there is one.
 
 ## Usage
 
