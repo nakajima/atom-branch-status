@@ -36,6 +36,7 @@ module.exports =
 
     request requestOptions, (error, response, body) =>
       return unless pr = JSON.parse(body)[0]
+      return if $('.atom-branch-status-pr-number').length # Don't insert dups while looking up initial PR
       @foundPR = true
       link = $("<a class='atom-branch-status-pr-number'> ##{pr.number} </a>")
       link.on "click", -> Shell.openExternal(pr.html_url)
