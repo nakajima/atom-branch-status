@@ -1,0 +1,16 @@
+{
+  "name": "atom-branch-status",
+  "main": "./lib/atom-branch-status",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Show the current branch status in Atom",
+  "activationEvents": ["atom-branch-status:toggle"],
+  "repository": "https://github.com/nakajima/atom-branch-status",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+    "request": "2.33.0"
+  }
+}
