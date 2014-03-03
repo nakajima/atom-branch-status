@@ -1,7 +1,7 @@
 {
   "name": "branch-status",
   "main": "./lib/atom-branch-status",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Show the current branch status and link to PR in Atom",
   "repository": "https://github.com/nakajima/atom-branch-status",
   "license": "MIT",
