@@ -11,8 +11,8 @@ a link to the branch's pull request if there is one.
 
 ## Todo
 
-- Super lame that you have to hit `ctrl-s` but I have no idea how to make things
-poll. Help. Patches welcome.
+- ~~Super lame that you have to hit `ctrl-s` but I have no idea how to make things
+poll. Help. Patches welcome.~~ Oh cool this works now.
 - I'd also like to be able to click the build and go to the `target_url`.
 
 ### Here's what it looks like right now:
