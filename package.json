@@ -4,7 +4,6 @@
   "version": "0.0.1",
   "private": true,
   "description": "Show the current branch status in Atom",
-  "activationEvents": ["atom-branch-status:toggle"],
   "repository": "https://github.com/nakajima/atom-branch-status",
   "license": "MIT",
   "engines": {
