@@ -5,7 +5,7 @@ a link to the branch's pull request if there is one.
 
 ## Usage
 
-1. Make sure atom has your github token. Pretty sure you'll want to run `api login`.
+1. Make sure atom has your github token. Pretty sure you'll want to run `apm login`.
 2. Install the package.
 3. Hit `ctrl-s` to update the branch status.
 
