@@ -1,5 +1,5 @@
 {
-  "name": "atom-branch-status",
+  "name": "branch-status",
   "main": "./lib/atom-branch-status",
   "version": "0.0.1",
   "private": true,
