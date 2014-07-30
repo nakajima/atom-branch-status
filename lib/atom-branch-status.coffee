@@ -9,6 +9,11 @@ getToken = ->
   keytar = require 'keytar'
   keytar.findPassword('Atom GitHub API Token') or keytar.findPassword('GitHub API Token')
 
+getNameWithOwner = (editor) ->
+  githubURL = new SimpleGitHubFile(editor.getPath()).githubRepoUrl()
+  nameWithOwner = githubURL.split('.com/')[1]
+  nameWithOwner?.replace(/\/+$/, '') # Replace any trailing slashes
+
 findPR = ->
   return if foundPR
   return unless repo = atom.project.getRepo()
@@ -20,8 +25,7 @@ findPR = ->
   branch = repo.branch.replace('refs/heads/', '').trim()
 
   # Find the name with owner
-  githubURL = new SimpleGitHubFile(editor.getPath()).githubRepoUrl()
-  nameWithOwner = githubURL.split('.com/')[1]
+  nameWithOwner = getNameWithOwner(editor)
   owner = nameWithOwner.split('/')[0]
   requestOptions =
     uri: "https://api.github.com/repos/#{nameWithOwner}/pulls?access_token=#{token}&head=#{owner}:#{branch}"
@@ -46,9 +50,7 @@ pollStatus = ->
   branch = repo.branch.replace('refs/heads/', '')
 
   # Find the name with owner
-  githubURL = new SimpleGitHubFile(editor.getPath()).githubRepoUrl()
-  nameWithOwner = githubURL.split('.com/')[1]
-
+  nameWithOwner = getNameWithOwner(editor)
   statusRequestOptions =
     uri: "https://api.github.com/repos/#{nameWithOwner}/statuses/#{branch}?access_token=#{token}"
     headers:
