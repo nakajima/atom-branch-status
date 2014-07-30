@@ -5,13 +5,16 @@ SimpleGitHubFile = require './SimpleGitHubFile'
 
 foundPR = false
 
+getToken = ->
+  keytar = require 'keytar'
+  keytar.findPassword('Atom GitHub API Token') or keytar.findPassword('GitHub API Token')
+
 findPR = ->
   return if foundPR
   return unless repo = atom.project.getRepo()
   return unless editor = atom.workspace.getActiveEditor()
 
-  # Pretty sure this requires the user to `apm login` first
-  token = atom.getGitHubAuthToken()
+  token = getToken()
 
   # Just want the name of the ref
   branch = repo.branch.replace('refs/heads/', '').trim()
@@ -37,8 +40,7 @@ pollStatus = ->
   return unless repo = atom.project.getRepo()
   return unless editor = atom.workspace.getActiveEditor()
 
-  # Pretty sure this requires the user to `apm login` first
-  token = atom.getGitHubAuthToken()
+  token = getToken()
 
   # Just want the name of the ref
   branch = repo.branch.replace('refs/heads/', '')
