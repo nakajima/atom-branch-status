@@ -118,18 +118,20 @@ pollStatus = ->
 
     # Actually updates the indicator. Wish there was a better way to access it
     # than just DOM traversal but yolo.
+    gitBranchElement = $('.git-branch')
     if state is "success"
-      $('.git-branch').css color: "green"
+      gitBranchElement.css color: "green"
     else if state is "pending"
-      $('.git-branch').css color: "yellow"
+      gitBranchElement.css color: "yellow"
     else if state is "error" or state is "failure"
-      $('.git-branch').css color: "red"
+      gitBranchElement.css color: "red"
     else if state
-      $('.git-branch').css color: "pink"
+      gitBranchElement.css color: "pink"
       console.error state, message
 
-    # TODO: Show message in tooltip?
-    #setToolTip(message)
+    if message
+      # TODO: Show message in tooltip?
+      atom.tooltips.add(gitBranchElement, {title: message})
 
 module.exports =
   config:
@@ -139,6 +141,7 @@ module.exports =
       default: ""
 
   activate: (state) ->
+    console.log state
     setTimeout @retryStatus, 5000
 
   deactivate: ->
