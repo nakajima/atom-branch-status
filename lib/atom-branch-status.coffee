@@ -1,7 +1,6 @@
-{$} = require 'atom-space-pen-views'
-Shell = require 'shell'
-request = require 'request'
-SimpleGitHubFile = require './SimpleGitHubFile'
+$ = null
+request = null
+SimpleGitHubFile = null
 
 foundPR = false
 etag = null
@@ -145,5 +144,8 @@ module.exports =
   serialize: ->
 
   retryStatus: =>
+    $ ?= require('atom-space-pen-views').$
+    request ?= require 'request'
+    SimpleGitHubFile ?= require './SimpleGitHubFile'
     findPR()
     pollStatus()
