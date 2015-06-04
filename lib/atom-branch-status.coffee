@@ -26,16 +26,12 @@ findPR = ->
   return unless ref = getRef()
   return unless editor = atom.workspace.getActiveTextEditor()
 
+  # Get personal access token from settings
   token = getToken()
 
-  # GitHub API address to poll (add token, if one is specified)
+  # GitHub API address to poll (add token, if one is specified in settings)
   uri = "https://api.github.com/repos/#{nameWithOwner}/pulls?head=#{owner}:#{ref}"
   uri += "&access_token=#{token}" if token
-  console.log "URI:", uri
-
-  # Add `If-None-Match` header to reduce unnecessary requests
-  # (these don't count towards the API rate limit)
-  ifNoneMatch = etag or ""
 
   # Find the name with owner
   nameWithOwner = getNameWithOwner(editor)
@@ -44,15 +40,19 @@ findPR = ->
     uri: uri
     headers:
       'User-Agent': 'Atom Branch Status 0.8.0'
-      'If-None-Match': ifNoneMatch
 
   request requestOptions, (error, response, body) =>
     console.error "Error:", error if error
     return if error
-    console.log "Status code:", response.statusCode
-    return unless response.statusCode is 200
+    # Return if nothing has changed since the last request
+    return if response.statusCode is 304
+    # Print error if something went wrong with the request
+    if not response.statusCode is 200
+      state = response.statusCode unless response.statusCode is 200
+      message = body.message or response.statusMessage
+      console.error state, message
+      return
     etag = response.headers.etag
-    console.log "ETag:", etag
     return unless pr = JSON.parse(body)[0]
     # Don't insert dups while looking up initial PR
     return if $('.atom-branch-status-pr-number').length
@@ -62,7 +62,7 @@ findPR = ->
     $('.icon-git-branch').after(link)
 
 pollStatus = ->
-  # New poll in 5 seconds
+  # New poll in 5 seconds (TODO: Better way of doing this?)
   setTimeout pollStatus, 5000
 
   return unless ref = getRef()
@@ -77,7 +77,6 @@ pollStatus = ->
   # GitHub API address to poll (add token, if one is specified in settings)
   uri = "https://api.github.com/repos/#{nameWithOwner}/statuses/#{ref}"
   uri += "?access_token=#{token}" if token
-  console.log "URI:", uri
 
   # Add `If-None-Match` header to reduce unnecessary requests
   # (these don't count towards the API rate limit)
@@ -90,22 +89,19 @@ pollStatus = ->
       'If-None-Match': ifNoneMatch
 
   request statusRequestOptions, (error, response, body) =>
-    console.log "Error:", error if error
+    console.error "Error:", error if error
     return if error
-    console.log "Status code:", response.statusCode
-    return unless response.statusCode is 200
-    console.log response
+    # Return if nothing has changed since the last request
+    return if response.statusCode is 304
     etag = response.headers.etag
-    console.log "ETag:", etag
-    statuses = JSON.parse(body)
-    statusContexts = []
-    console.log statuses
+    body = JSON.parse(body)
 
-    message = statuses.message
-    state = message
+    state = response.statusCode unless response.statusCode is 200
+    message = body.message or response.statusMessage
 
     if not state
-      for status in statuses
+      statusContexts = []
+      for status in body
         context = status.context
         # Break if the status is not for the current ref
         break if context in statusContexts
@@ -119,23 +115,17 @@ pollStatus = ->
           # Break out of loop if the state is "error" or "failure"
           break if state is "error" or state is "failure"
 
-    console.log "State:", state
-    console.log "Message:", message
-
     # Actually updates the indicator. Wish there was a better way to access it
     # than just DOM traversal but yolo.
     if state is "success"
-      console.log "success"
       $('.git-branch').css color: "green"
     else if state is "pending"
-      console.log "pending"
       $('.git-branch').css color: "yellow"
     else if state is "error" or state is "failure"
-      console.log "error/failure"
       $('.git-branch').css color: "red"
     else if state
-      console.log "Some error"
       $('.git-branch').css color: "pink"
+      console.error state, message
 
     # TODO: Show message in tooltip?
     #setToolTip(message)
