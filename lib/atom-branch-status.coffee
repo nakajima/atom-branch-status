@@ -1,6 +1,7 @@
 $ = null
 request = null
 SimpleGitHubFile = null
+Shell = null
 
 foundPR = false
 etag = null
@@ -28,13 +29,14 @@ findPR = ->
   # Get personal access token from settings
   token = getToken()
 
+  # Find the name with owner
+  nameWithOwner = getNameWithOwner(editor)
+  owner = nameWithOwner.split('/')[0]
+
   # GitHub API address to poll (add token, if one is specified in settings)
   uri = "https://api.github.com/repos/#{nameWithOwner}/pulls?head=#{owner}:#{ref}"
   uri += "&access_token=#{token}" if token
 
-  # Find the name with owner
-  nameWithOwner = getNameWithOwner(editor)
-  owner = nameWithOwner.split('/')[0]
   requestOptions =
     uri: uri
     headers:
@@ -52,7 +54,6 @@ findPR = ->
       message = body?.message or response.statusMessage
       console.error state, message
       return
-    etag = response.headers.etag
     return unless pr = body[0]
     # Don't insert dups while looking up initial PR
     return if $('.atom-branch-status-pr-number').length
@@ -148,5 +149,6 @@ module.exports =
     $ ?= require('atom-space-pen-views').$
     request ?= require 'request'
     SimpleGitHubFile ?= require './SimpleGitHubFile'
+    Shell ?= require 'shell'
     findPR()
     pollStatus()
