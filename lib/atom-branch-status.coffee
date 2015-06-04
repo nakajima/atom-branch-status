@@ -56,11 +56,12 @@ findPR = ->
       return
     return unless pr = body[0]
     # Don't insert dups while looking up initial PR
-    return if $('.atom-branch-status-pr-number').length
+    return if $('.branch-status-pr-number').length
     foundPR = true
-    link = $("<a class='atom-branch-status-pr-number'> ##{pr.number} </a>")
+    link = $("<a class='branch-status-pr-number'> (##{pr.number})</a>")
     link.on "click", -> Shell.openExternal(pr.html_url)
-    $('.icon-git-branch').after(link)
+    labelElement = $('.git-branch .branch-label')
+    labelElement.after(link)
 
 pollStatus = ->
   # New poll in 5 seconds (TODO: Better way of doing this?)
@@ -96,9 +97,11 @@ pollStatus = ->
     return if response.statusCode is 304
     etag = response.headers.etag
     body = JSON.parse(body)
+    console.log response
 
     state = response.statusCode unless response.statusCode is 200
     message = body.message or response.statusMessage
+    targetUrl = null
 
     if not state
       statusContexts = []
@@ -113,25 +116,37 @@ pollStatus = ->
           # Set state and message
           state = status.state
           message = status.description
+          targetUrl = status.target_url
           # Break out of loop if the state is "error" or "failure"
           break if state is "error" or state is "failure"
 
     # Actually updates the indicator. Wish there was a better way to access it
     # than just DOM traversal but yolo.
-    gitBranchElement = $('.git-branch')
+    branchElement = $('.git-branch')
     if state is "success"
-      gitBranchElement.css color: "green"
+      branchElement.css color: "green"
     else if state is "pending"
-      gitBranchElement.css color: "yellow"
+      branchElement.css color: "yellow"
     else if state is "error" or state is "failure"
-      gitBranchElement.css color: "red"
+      branchElement.css color: "red"
     else if state
-      gitBranchElement.css color: "pink"
+      branchElement.css color: "pink"
       console.error state, message
 
     if message
       # TODO: Show message in tooltip?
-      atom.tooltips.add(gitBranchElement, {title: message})
+      atom.tooltips.add(branchElement, {title: message})
+
+    if targetUrl
+      # Add link to
+      labelElement = $('.git-branch .branch-label')
+      console.log labelElement
+      console.log labelElement[0]
+      console.log targetUrl
+      link = $("<a class='branch-label branch-status-target-link'>" + labelElement[0].innerText + "</a>")
+      link.on "click", -> Shell.openExternal(targetUrl)
+      labelElement.replaceWith(link)
+      #labelElement[0].innerHtml = '<a href="' + targetUrl + '">' + labelElement[0].innerText + '</a>'
 
 module.exports =
   config:
