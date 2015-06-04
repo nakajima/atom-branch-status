@@ -45,14 +45,15 @@ findPR = ->
     return if error
     # Return if nothing has changed since the last request
     return if response.statusCode is 304
+    body = JSON.parse(body)
     # Print error if something went wrong with the request
     if not response.statusCode is 200
       state = response.statusCode unless response.statusCode is 200
-      message = body.message or response.statusMessage
+      message = body?.message or response.statusMessage
       console.error state, message
       return
     etag = response.headers.etag
-    return unless pr = JSON.parse(body)[0]
+    return unless pr = body[0]
     # Don't insert dups while looking up initial PR
     return if $('.atom-branch-status-pr-number').length
     foundPR = true
