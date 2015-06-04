@@ -3,8 +3,8 @@ request = null
 SimpleGitHubFile = null
 Shell = null
 
-foundPR = false
 etag = null
+tooltip = null
 
 getToken = ->
   atom.config.get("branch-status.personalAccessToken")
@@ -22,7 +22,9 @@ getRef = ->
   refName
 
 findPR = ->
-  return if foundPR
+  # New poll in 5 seconds (TODO: Better way of doing this?)
+  setTimeout findPR, 5000
+
   return unless ref = getRef()
   return unless editor = atom.workspace.getActiveTextEditor()
 
@@ -54,10 +56,9 @@ findPR = ->
       message = body?.message or response.statusMessage
       console.error state, message
       return
+    # Remove previous PR link
+    $('.branch-status-pr-number')?.remove()
     return unless pr = body[0]
-    # Don't insert dups while looking up initial PR
-    return if $('.branch-status-pr-number').length
-    foundPR = true
     link = $("<a class='branch-status-pr-number'> (##{pr.number})</a>")
     link.on "click", -> Shell.openExternal(pr.html_url)
     labelElement = $('.git-branch .branch-label')
@@ -97,7 +98,6 @@ pollStatus = ->
     return if response.statusCode is 304
     etag = response.headers.etag
     body = JSON.parse(body)
-    console.log response
 
     state = response.statusCode unless response.statusCode is 200
     message = body.message or response.statusMessage
@@ -134,19 +134,17 @@ pollStatus = ->
       console.error state, message
 
     if message
-      # TODO: Show message in tooltip?
-      atom.tooltips.add(branchElement, {title: message})
+      # Remove previous tool tip
+      tooltip?.dispose()
+      # Show status message in tool tip
+      tooltip = atom.tooltips.add(branchElement, {title: message})
 
     if targetUrl
       # Add link to
       labelElement = $('.git-branch .branch-label')
-      console.log labelElement
-      console.log labelElement[0]
-      console.log targetUrl
-      link = $("<a class='branch-label branch-status-target-link'>" + labelElement[0].innerText + "</a>")
+      link = $("<a class='branch-status-target-link'>" + labelElement[0].innerText + "</a>")
       link.on "click", -> Shell.openExternal(targetUrl)
-      labelElement.replaceWith(link)
-      #labelElement[0].innerHtml = '<a href="' + targetUrl + '">' + labelElement[0].innerText + '</a>'
+      labelElement.html(link)
 
 module.exports =
   config:
