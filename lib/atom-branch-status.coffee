@@ -13,6 +13,7 @@ getToken = ->
 
 getNameWithOwner = (editor) ->
   githubURL = new SimpleGitHubFile(editor.getPath()).githubRepoUrl()
+  return unless githubURL
   nameWithOwner = githubURL.split('.com/')[1]
   nameWithOwner?.replace(/\/+$/, '') # Replace any trailing slashes
 
@@ -32,7 +33,7 @@ findPR = ->
   token = getToken()
 
   # Find the name with owner
-  nameWithOwner = getNameWithOwner(editor)
+  return unless nameWithOwner = getNameWithOwner(editor)
   owner = nameWithOwner.split('/')[0]
 
   # GitHub API address to poll (add token, if one is specified in settings)
@@ -75,7 +76,7 @@ pollStatus = ->
   token = getToken()
 
   # Find the name with owner
-  nameWithOwner = getNameWithOwner(editor)
+  return unless nameWithOwner = getNameWithOwner(editor)
 
   # GitHub API address to poll (add token, if one is specified in settings)
   uri = "https://api.github.com/repos/#{nameWithOwner}/statuses/#{ref}"
