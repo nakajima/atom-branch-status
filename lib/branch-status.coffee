@@ -133,10 +133,14 @@ pollStatus = ->
     else if state
       branchElement.css color: "pink"
       console.error state, message
+    else
+      branchElement.css color: "inherit"
+      message = null
+
+    # Remove any previous tool tip
+    tooltip?.dispose()
 
     if message
-      # Remove previous tool tip
-      tooltip?.dispose()
       # Show status message in tool tip
       tooltip = atom.tooltips.add(branchElement, {title: message})
 
@@ -146,6 +150,11 @@ pollStatus = ->
       link = $("<a class='branch-status-target-link'>" + labelElement[0].innerText + "</a>")
       link.on "click", -> Shell.openExternal(targetUrl)
       labelElement.html(link)
+    else
+      # Remove any previous link
+      labelElement = $('.git-branch .branch-label')
+      text = $("<span>" + labelElement[0].innerText + "</span>")
+      labelElement.html(text)
 
 module.exports =
   config:
