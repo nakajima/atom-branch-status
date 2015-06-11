@@ -12,8 +12,6 @@ request if there is one.
     `repo:status` scope
   - Add the token to the package settings (Settings > Packages > branch-status)
 
-The package works without the personal access token, but the GitHub API has a
-rate limit of 60 unauthenticated requests per hour.
 
 If the branch name turns pink, open the developer tools (View > Developer >
 Toggle Developer Tools) and see if the console shows an error.
