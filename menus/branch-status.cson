@@ -1,7 +1,11 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
-  '.overlayer':
-      'Enable atom-branch-status': 'atom-branch-status:toggle'
+  'atom-text-editor': [
+    {
+      label: 'Enable branch-status',
+      command: 'branch-status:toggle'
+    }
+  ]
 
 'menu': [
   {
@@ -9,7 +13,7 @@
     'submenu': [
       'label': 'Branch Status'
       'submenu': [
-        { 'label': 'Update', 'command': 'atom-branch-status:toggle' }
+        { 'label': 'Update', 'command': 'branch-status:toggle' }
       ]
     ]
   }

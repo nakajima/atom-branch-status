@@ -10,7 +10,7 @@ class SimpleGitHubFile
 
   # Internal
   constructor: (@filePath) ->
-    @repo = atom.project.getRepo()
+    @repo = atom.project.getRepositories()?[0]
 
   # Public
   open: ->

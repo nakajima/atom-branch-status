@@ -1,19 +1,23 @@
-# atom-branch-status package
+# branch-status package
 
-Show the current status of your branch using the GitHub status API. It also inserts
-a link to the branch's pull request if there is one.
+Show the current status of your branch using the GitHub status API.
+It also inserts links to the status `target_url` and to the branch's pull
+request if there is one.
 
 ## Usage
 
-1. Make sure atom has your github token. Pretty sure you'll want to run `apm login`.
-2. Install the package.
-3. Hit `ctrl-s` to update the branch status.
+1. Install the package (Settings > Install > search for `branch-status`)
+2. Make sure `branch-status` has a GitHub personal access token (OAuth):
+  - [Create one](https://github.com/settings/tokens) and give it the
+    `repo:status` scope
+  - Add the token to the package settings (Settings > Packages > branch-status)
 
-## Todo
+The package works without the personal access token, but the GitHub API has a
+rate limit of 60 unauthenticated requests per hour.
 
-- ~~Super lame that you have to hit `ctrl-s` but I have no idea how to make things
-poll. Help. Patches welcome.~~ Oh cool this works now.
-- I'd also like to be able to click the build and go to the `target_url`.
+If the branch name turns pink, open the developer tools (View > Developer >
+Toggle Developer Tools) and see if the console shows an error.
+
 
 ### Here's what it looks like right now:
 
