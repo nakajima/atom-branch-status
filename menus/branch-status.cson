@@ -2,8 +2,8 @@
 'context-menu':
   'atom-text-editor': [
     {
-      label: 'Enable atom-branch-status',
-      command: 'atom-branch-status:toggle'
+      label: 'Enable branch-status',
+      command: 'branch-status:toggle'
     }
   ]
 
@@ -13,7 +13,7 @@
     'submenu': [
       'label': 'Branch Status'
       'submenu': [
-        { 'label': 'Update', 'command': 'atom-branch-status:toggle' }
+        { 'label': 'Update', 'command': 'branch-status:toggle' }
       ]
     ]
   }

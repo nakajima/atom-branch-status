@@ -1,6 +1,6 @@
 {
   "name": "branch-status",
-  "main": "./lib/atom-branch-status",
+  "main": "./lib/branch-status",
   "version": "0.7.0",
   "description": "Show the current branch status and link to PR in Atom",
   "repository": "https://github.com/nakajima/atom-branch-status",
