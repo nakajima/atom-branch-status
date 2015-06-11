@@ -20,3 +20,13 @@ Toggle Developer Tools) and see if the console shows an error.
 ### Here's what it looks like right now:
 
 ![](http://cloud.patnakajima.com/image/3t422y0p2S45/Gemfile%20-%20_Users_nakajima_github_github.png)
+
+## Security
+
+It's important to remember that inside Atom, any other package will be able to query and fetch the access token that you provide `branch-status`.
+
+You should create a specific unique access token just for it to use. This way you can remove it later and provide it with just the access scope that it needs.
+
+You should **ONLY** give it the `repo:access` scope.
+
+**Don't** use a general all personall access token that has full permission for this package.
