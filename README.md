@@ -8,8 +8,8 @@ request if there is one.
 
 1. Install the package (Settings > Install > search for `branch-status`)
 2. Make sure `branch-status` has a GitHub personal access token (OAuth):
-  - [Create one](https://github.com/settings/tokens) and give it the
-    `repo:status` scope
+  - [Create one](https://github.com/settings/tokens) and give it **only** the
+    `repo:status` scope. See [security section](#security-section) below
   - Add the token to the package settings (Settings > Packages > branch-status)
 
 
