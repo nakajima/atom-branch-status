@@ -7,7 +7,7 @@ request if there is one.
 ## Usage
 
 1. Install the package (Settings > Install > search for `branch-status`)
-2. Make sure `branch-status` has a GitHub personal access token:
+2. Make sure `branch-status` has a GitHub personal access token (OAuth):
   - [Create one](https://github.com/settings/tokens) and give it the
     `repo:status` scope
   - Add the token to the package settings (Settings > Packages > branch-status)
@@ -18,10 +18,6 @@ rate limit of 60 unauthenticated requests per hour.
 If the branch name turns pink, open the developer tools (View > Developer >
 Toggle Developer Tools) and see if the console shows an error.
 
-## Todo
-
-- I'd also like to be able to click the build and go to the `target_url`.
-- Tool tip with the status message when hovering over the branch name.
 
 ### Here's what it looks like right now:
 
