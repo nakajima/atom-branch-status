@@ -27,6 +27,6 @@ It's important to remember that inside Atom, any other package will be able to q
 
 You should create a specific unique access token just for it to use. This way you can remove it later and provide it with just the access scope that it needs.
 
-You should **ONLY** give it the `repo:access` scope.
+You should **ONLY** give it the `repo:status` scope.
 
 **Don't** use a general all personall access token that has full permission for this package.
