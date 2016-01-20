@@ -144,6 +144,9 @@ pollStatus = ->
   else if state
     branchElement.css color: "pink"
     console.error state, message
+  else
+    # Remove color
+    branchElement.css color: ""
 
   if message
     # Remove previous tool tip
@@ -154,10 +157,15 @@ pollStatus = ->
   if targetUrl
     # Add link to the status target_url (e.g. build log)
     labelElement = $('.git-branch .branch-label')
-    linkText = labelElement[0].innerText
-    link = $("<a class='branch-status-target-link'>" + linkText + "</a>")
+    refName = labelElement[0].innerText
+    link = $("<a class='branch-status-target-link'>" + refName + "</a>")
     link.on "click", -> Shell.openExternal(targetUrl)
     labelElement.html(link)
+  else
+    # Remove any existing link
+    labelElement = $('.git-branch .branch-label')
+    refName = labelElement[0].innerText
+    labelElement.html(refName)
 
 module.exports =
   config:
