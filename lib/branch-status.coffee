@@ -6,6 +6,11 @@ Shell = null
 etag = null
 tooltip = null
 
+ref = null
+state = null
+message = null
+targetUrl = null
+
 getToken = ->
   atom.config.get("branch-status.personalAccessToken")
   #keytar = require 'keytar'
@@ -26,7 +31,7 @@ findPR = ->
   # New poll in 5 seconds (TODO: Better way of doing this?)
   setTimeout findPR, 5000
 
-  return unless ref = getRef()
+  return unless prRef = getRef()
   return unless editor = atom.workspace.getActiveTextEditor()
 
   # Get personal access token from settings
@@ -37,7 +42,7 @@ findPR = ->
   owner = nameWithOwner.split('/')[0]
 
   # GitHub API address to poll (add token, if one is specified in settings)
-  uri = "https://api.github.com/repos/#{nameWithOwner}/pulls?head=#{owner}:#{ref}"
+  uri = "https://api.github.com/repos/#{nameWithOwner}/pulls?head=#{owner}:#{prRef}"
   uri += "&access_token=#{token}" if token
 
   requestOptions =
@@ -53,9 +58,7 @@ findPR = ->
     body = JSON.parse(body)
     # Print error if something went wrong with the request
     if not response.statusCode is 200
-      state = response.statusCode unless response.statusCode is 200
-      message = body?.message or response.statusMessage
-      console.error state, message
+      console.error response.statusCode, body?.message or response.statusMessage
       return
     # Remove previous PR link
     $('.branch-status-pr-number')?.remove()
@@ -68,6 +71,9 @@ findPR = ->
 pollStatus = ->
   # New poll in 5 seconds (TODO: Better way of doing this?)
   setTimeout pollStatus, 5000
+
+  # Store ref from last poll
+  oldRef = ref
 
   return unless ref = getRef()
   return unless editor = atom.workspace.getActiveTextEditor()
@@ -86,6 +92,10 @@ pollStatus = ->
   # (these don't count towards the API rate limit)
   ifNoneMatch = etag or ""
 
+  # Always get the status if the ref has changed
+  # (otherwise we would need to store the status for each ref)
+  ifNoneMatch = "" if ref is not oldRef
+
   statusRequestOptions =
     uri: uri
     headers:
@@ -100,6 +110,7 @@ pollStatus = ->
     etag = response.headers.etag
     body = JSON.parse(body)
 
+    state = null
     state = response.statusCode unless response.statusCode is 200
     message = body.message or response.statusMessage
     targetUrl = null
@@ -121,40 +132,40 @@ pollStatus = ->
           # Break out of loop if the state is "error" or "failure"
           break if state is "error" or state is "failure"
 
-    # Actually updates the indicator. Wish there was a better way to access it
-    # than just DOM traversal but yolo.
-    branchElement = $('.git-branch')
-    if state is "success"
-      branchElement.css color: "green"
-    else if state is "pending"
-      branchElement.css color: "yellow"
-    else if state is "error" or state is "failure"
-      branchElement.css color: "red"
-    else if state
-      branchElement.css color: "pink"
-      console.error state, message
-    else
-      branchElement.css color: "inherit"
-      message = null
+  # Actually updates the indicator. Wish there was a better way to access it
+  # than just DOM traversal but yolo.
+  branchElement = $('.git-branch')
+  if state is "success"
+    branchElement.css color: "green"
+  else if state is "pending"
+    branchElement.css color: "yellow"
+  else if state is "error" or state is "failure"
+    branchElement.css color: "red"
+  else if state
+    branchElement.css color: "pink"
+    console.error state, message
+  else
+    # Remove color
+    branchElement.css color: ""
 
-    # Remove any previous tool tip
+  if message
+    # Remove previous tool tip
     tooltip?.dispose()
+    # Show status message in tool tip
+    tooltip = atom.tooltips.add(branchElement, {title: message})
 
-    if message
-      # Show status message in tool tip
-      tooltip = atom.tooltips.add(branchElement, {title: message})
-
-    if targetUrl
-      # Add link to
-      labelElement = $('.git-branch .branch-label')
-      link = $("<a class='branch-status-target-link'>" + labelElement[0].innerText + "</a>")
-      link.on "click", -> Shell.openExternal(targetUrl)
-      labelElement.html(link)
-    else
-      # Remove any previous link
-      labelElement = $('.git-branch .branch-label')
-      text = $("<span>" + labelElement[0].innerText + "</span>")
-      labelElement.html(text)
+  if targetUrl
+    # Add link to the status target_url (e.g. build log)
+    labelElement = $('.git-branch .branch-label')
+    refName = labelElement[0].innerText
+    link = $("<a class='branch-status-target-link'>" + refName + "</a>")
+    link.on "click", -> Shell.openExternal(targetUrl)
+    labelElement.html(link)
+  else
+    # Remove any existing link
+    labelElement = $('.git-branch .branch-label')
+    refName = labelElement[0].innerText
+    labelElement.html(refName)
 
 module.exports =
   config:
