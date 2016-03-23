@@ -125,13 +125,13 @@ pollStatus = ->
     # than just DOM traversal but yolo.
     branchElement = $('.git-branch')
     if state is "success"
-      branchElement.css color: "green"
+      branchElement.css color: "#0AB254"
     else if state is "pending"
-      branchElement.css color: "yellow"
+      branchElement.css color: "#FFE754"
     else if state is "error" or state is "failure"
-      branchElement.css color: "red"
+      branchElement.css color: "#FF2F1D"
     else if state
-      branchElement.css color: "pink"
+      branchElement.css color: "#AA8A69"
       console.error state, message
     else
       branchElement.css color: "inherit"
